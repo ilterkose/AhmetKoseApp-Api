@@ -3,13 +3,16 @@ const router = express.Router()
 let Comment = require('../models/comment.model')
 
 
-router.route('/').get((req,res) =>{
-    Comment.find()
-    .then((comments) => res.json(comments))
-    .catch((error) => res.status(400).json('Error' + error))
+router.route('/').get(async (req,res) =>{
+    try{
+        const comments = await Comment.find()
+        res.json(comments)
+    }catch(e){
+        res.status(400).send()
+    }
 })
 
-router.route('/add').post((req,res) => {
+router.route('/add').post( async (req,res) => {
     let username = req.body.username
     let comment = req.body.comment
 
@@ -18,9 +21,13 @@ router.route('/add').post((req,res) => {
         comment
     }) 
 
-    newComment.save()
-    .then(()=>res.json('comment added'))
-    .catch((error) => res.status(400).json('Error' + error))
+    try {
+        await newComment.save()
+        res.json('comment added')
+    } catch(e) {
+        res.status(400).json('Error' , error)
+    }
+
 })
 
 module.exports = router
